@@ -1,7 +1,5 @@
 FROM golang:1.18.1-stretch
 
-WORKDIR /workspace
-ADD go.mod /workspace
-RUN go mod download
-
+WORKDIR /go/src
+ADD ./main.go /go/src
 CMD go run main.go
