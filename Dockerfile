@@ -1,5 +1,5 @@
 FROM golang:1.18.1-stretch
 
-WORKDIR /go/src
-ADD ./main.go /go/src
+WORKDIR /app
+ADD ./main.go /app
 CMD go run main.go
