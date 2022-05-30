@@ -6,3 +6,12 @@ services:
       dockerfile: ./Dockerfile
     volumes:
       - .:/app
+  mysql:
+    image: mysql/mysql-server:8.0.28
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_ROOT_HOST: '%'
+    volumes:
+      - .:/app
+    ports:
+      - 3307:3306
