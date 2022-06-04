@@ -3,11 +3,11 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
 	"strings"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/labstack/echo/v4"
 )
 
 var db *sql.DB
@@ -19,7 +19,12 @@ func main() {
 		panic(err)
 	}
 	http.HandleFunc("/", handler)
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	//log.Fatal(http.ListenAndServe(":8080", nil))
+	e := echo.New()
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello Echo")
+	})
+	e.Logger.Fatal(e.Start(":8080"))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
