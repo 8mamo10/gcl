@@ -8,6 +8,9 @@ services:
       - .:/app
     ports:
       - '8080:8080'
+    depends_on:
+      - mysql
+
   mysql:
     image: mysql/mysql-server:8.0.28
     environment:
