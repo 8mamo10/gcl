@@ -1,33 +1,37 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
-	"strings"
 
-	_ "github.com/go-sql-driver/mysql"
 	"github.com/labstack/echo/v4"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
-var db *sql.DB
+type User struct {
+	ID        int64
+	AccountID int64
+	Name      string
+}
+
+var db *gorm.DB
 
 func main() {
-	var err error
-	db, err = sql.Open("mysql", "root:password@tcp(mysql:3306)/mrhc")
+	dsn := "root:password@tcp(mysql:3306)/mrhc"
+	d, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
+	db = d
+
 	e := echo.New()
-	// e.GET("/users", func(c echo.Context) error {
-	// 	return c.String(http.StatusOK, "Hello Echo")
-	// })
 	e.GET("/users", getUsersHandler)
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
 func getUsersHandler(ctx echo.Context) error {
-	rows, err := db.Query("SELECT * FROM users")
+	rows, err := db.Model(&User{}).Rows()
 	if err != nil {
 		return echo.NewHTTPError(
 			http.StatusBadRequest,
@@ -35,19 +39,17 @@ func getUsersHandler(ctx echo.Context) error {
 	}
 	defer rows.Close()
 
-	var users []string
+	var users []*User
 	for rows.Next() {
-		var id int
-		var account_id int
-		var name string
-		err := rows.Scan(&id, &account_id, &name)
+		var user User
+		err := db.ScanRows(rows, &user)
 		if err != nil {
 			return echo.NewHTTPError(
 				http.StatusBadRequest,
-				fmt.Sprintf("failed to retrieve data: %v", err))
+				fmt.Sprintf("failed retrieve data: %v", err))
 		}
-		users = append(users, fmt.Sprintf(`{"id": %d, "account_id: %d, "name": "%s"}`, id, account_id, name))
+		users = append(users, &user)
 	}
-	ctx.JSON(http.StatusOK, fmt.Sprintf("["+strings.Join(users, ",")+"]"))
+	ctx.JSON(http.StatusOK, users)
 	return err
 }
