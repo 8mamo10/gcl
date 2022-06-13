@@ -9,6 +9,11 @@ import (
 	"gorm.io/gorm"
 )
 
+type Account struct {
+	ID   int64
+	Name string
+}
+
 type User struct {
 	ID        int64
 	AccountID int64
@@ -50,6 +55,7 @@ func getUsersHandler(ctx echo.Context) error {
 		}
 		users = append(users, &user)
 	}
+
 	ctx.JSON(http.StatusOK, users)
 	return err
 }
