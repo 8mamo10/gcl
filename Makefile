@@ -4,9 +4,9 @@ DC := docker compose -f docker-compose.yml
 setup-db:
 	${DC} exec mysql bash -c 'mysql -uroot -ppassword < /app/setup.sql'
 
-.PHONY: ps
-ps:
-	${DC} ps
+.PHONY: run-db
+run-db:
+	${DC} up -d mysql
 
 .PHONY: run
 run:
@@ -15,4 +15,8 @@ run:
 .PHONY: restart
 restart:
 	${DC} restart server
+
+.PHONY: ps
+ps:
+	${DC} ps
 
