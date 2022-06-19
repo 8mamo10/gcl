@@ -26,17 +26,19 @@ func CreateServer() *Server {
 	return &Server{Port: port, Echo: e}
 }
 
-func (srv *Server) Run() {
+func (srv *Server) Run() error {
 	go func() {
 		if err := srv.Echo.Start(":" + srv.Port); err != nil {
+			panic(err)
 		}
 	}()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
 	<-quit
-	_, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
+	return srv.Echo.Shutdown(ctx)
 }
 
 type Account struct {
