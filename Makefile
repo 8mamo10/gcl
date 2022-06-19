@@ -20,3 +20,7 @@ restart:
 ps:
 	${DC} ps
 
+.PHONY: logs
+logs:
+	${DC} logs server
+
