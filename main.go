@@ -4,9 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/8mamo10/gcl/internal/infra"
 	"github.com/labstack/echo/v4"
-	"gorm.io/driver/mysql"
-	"gorm.io/gorm"
 )
 
 type Account struct {
@@ -21,16 +20,11 @@ type User struct {
 	Email     string
 }
 
-var db *gorm.DB
+func init() {
+	infra.InitializeDatabase()
+}
 
 func main() {
-	dsn := "root:password@tcp(mysql:3306)/mrhc"
-	d, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
-	if err != nil {
-		panic(err)
-	}
-	db = d
-
 	e := echo.New()
 	e.GET("/users", getUsersHandler)
 	e.GET("/accounts", getAccountsHandler)
@@ -38,7 +32,7 @@ func main() {
 }
 
 func getUsersHandler(ctx echo.Context) error {
-	rows, err := db.Model(&User{}).Rows()
+	rows, err := infra.GetDB().Model(&User{}).Rows()
 	if err != nil {
 		return echo.NewHTTPError(
 			http.StatusBadRequest,
@@ -49,7 +43,7 @@ func getUsersHandler(ctx echo.Context) error {
 	var users []*User
 	for rows.Next() {
 		var user User
-		err := db.ScanRows(rows, &user)
+		err := infra.GetDB().ScanRows(rows, &user)
 		if err != nil {
 			return echo.NewHTTPError(
 				http.StatusBadRequest,
@@ -63,7 +57,7 @@ func getUsersHandler(ctx echo.Context) error {
 }
 
 func getAccountsHandler(ctx echo.Context) error {
-	rows, err := db.Model(&Account{}).Rows()
+	rows, err := infra.GetDB().Model(&Account{}).Rows()
 	if err != nil {
 		return echo.NewHTTPError(
 			http.StatusBadRequest,
@@ -74,7 +68,7 @@ func getAccountsHandler(ctx echo.Context) error {
 	var accounts []*Account
 	for rows.Next() {
 		var account Account
-		err := db.ScanRows(rows, &account)
+		err := infra.GetDB().ScanRows(rows, &account)
 		if err != nil {
 			return echo.NewHTTPError(
 				http.StatusBadRequest,
