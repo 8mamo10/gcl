@@ -6,6 +6,6 @@ import (
 	"github.com/8mamo10/gcl/internal/domain"
 )
 
-type repository interface {
+type Repository interface {
 	GetAll(ctx context.Context, limit, offset int) ([]*domain.User, error)
 }
