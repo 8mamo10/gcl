@@ -8,8 +8,11 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/8mamo10/gcl/internal/di"
 	"github.com/8mamo10/gcl/internal/infra"
+	"github.com/8mamo10/gcl/internal/presenter/schema"
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 const port = "8080"
@@ -20,9 +23,17 @@ type Server struct {
 }
 
 func CreateServer() *Server {
+	presenter := di.NewPresenter()
+	wrapper := schema.ServerInterfaceWrapper{
+		Handler: presenter,
+	}
+
 	e := echo.New()
-	e.GET("/users", getUsersHandler)
-	e.GET("/accounts", getAccountsHandler)
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	//e.GET("/users", getUsersHandler)
+	//e.GET("/accounts", getAccountsHandler)
+	e.GET("/users", wrapper.GetUsers)
 	return &Server{Port: port, Echo: e}
 }
 
