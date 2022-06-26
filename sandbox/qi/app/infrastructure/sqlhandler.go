@@ -12,7 +12,7 @@ type SqlHandler struct {
 }
 
 func NewSqlHandler() database.SqlHandler {
-	conn, err := sql.Open("mysql", "root:@tcp(db:3306)/sample")
+	conn, err := sql.Open("mysql", "root:password@tcp(127.0.0.1:3307)/sample")
 	if err != nil {
 		panic(err.Error)
 	}

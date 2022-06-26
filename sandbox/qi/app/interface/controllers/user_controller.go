@@ -51,5 +51,3 @@ func (controller *UserController) Show(c Context) {
 	}
 	c.JSON(200, user)
 }
-
-func NewError(err error)

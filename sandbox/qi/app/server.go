@@ -1,7 +1,7 @@
 package main
 
-import "fmt"
+import "github.com/8mamo10/gcl/sandbox/qi/app/infrastructure"
 
 func main() {
-	fmt.Println("This is server")
+	infrastructure.Router.Run(":8088")
 }
